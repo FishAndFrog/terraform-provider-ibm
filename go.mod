@@ -246,3 +246,5 @@ exclude (
 	k8s.io/client-go v11.0.1-0.20190409021438-1a26190bd76a+incompatible
 	k8s.io/client-go v12.0.0+incompatible
 )
+
+replace github.com/IBM-Cloud/container-services-go-sdk => github.com/FishAndFrog/container-services-go-sdk v0.0.0-20240701104730-8de46bf46da2
