@@ -11,13 +11,14 @@ import (
 	"time"
 
 	"github.com/IBM-Cloud/container-services-go-sdk/kubernetesserviceapiv1"
-	"github.com/IBM-Cloud/terraform-provider-ibm/ibm/conns"
-	"github.com/IBM-Cloud/terraform-provider-ibm/ibm/flex"
-	"github.com/IBM-Cloud/terraform-provider-ibm/ibm/validate"
 	"github.com/IBM/go-sdk-core/v5/core"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/customdiff"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
+	"github.com/IBM-Cloud/terraform-provider-ibm/ibm/conns"
+	"github.com/IBM-Cloud/terraform-provider-ibm/ibm/flex"
+	"github.com/IBM-Cloud/terraform-provider-ibm/ibm/validate"
 )
 
 const (
@@ -92,6 +93,11 @@ func ResourceIBMSatelliteLocation() *schema.Resource {
 					return o == n
 				},
 				Description: "The IBM Cloud metro from which the Satellite location is managed",
+			},
+			"physical_address": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "An optional physical address of the new Satellite location which is deployed on premise",
 			},
 			"description": {
 				Type:        schema.TypeString,
@@ -237,7 +243,18 @@ func ResourceIBMSatelliteLocationValidator() *validate.ResourceValidator {
 			Optional:                   true,
 			Regexp:                     `^[A-Za-z0-9:_ .-]+$`,
 			MinValueLength:             1,
-			MaxValueLength:             128})
+			MaxValueLength:             128,
+		},
+		validate.ValidateSchema{
+			Identifier:                 "physical_address",
+			ValidateFunctionIdentifier: validate.ValidateRegexpLen,
+			Type:                       validate.TypeString,
+			Optional:                   true,
+			Regexp:                     `^[A-Za-z0-9:_ .-]+$`,
+			MinValueLength:             0,
+			MaxValueLength:             400,
+		},
+	)
 
 	ibmSatelliteLocationValidator := validate.ResourceValidator{ResourceName: "ibm_satellite_location", Schema: validateSchema}
 	return &ibmSatelliteLocationValidator
@@ -270,6 +287,11 @@ func resourceIBMSatelliteLocationCreate(d *schema.ResourceData, meta interface{}
 	if v, ok := d.GetOk("logging_account_id"); ok {
 		logAccID := v.(string)
 		createSatLocOptions.LoggingAccountID = &logAccID
+	}
+
+	if v, ok := d.GetOk("physical_address"); ok {
+		addr := v.(string)
+		createSatLocOptions.PhysicalAddress = &addr
 	}
 
 	if v, ok := d.GetOk("description"); ok {
@@ -349,6 +371,10 @@ func resourceIBMSatelliteLocationRead(d *schema.ResourceData, meta interface{}) 
 	d.Set(satLocation, *instance.Name)
 	if instance.Description != nil {
 		d.Set("description", *instance.Description)
+	}
+
+	if instance.PhysicalAddress != nil {
+		d.Set("physical_address", *instance.PhysicalAddress)
 	}
 
 	if instance.CoreosEnabled != nil {
