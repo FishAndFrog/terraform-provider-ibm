@@ -99,7 +99,7 @@ func ResourceIBMSatelliteLocation() *schema.Resource {
 				Optional:    true,
 				Description: "An optional physical address of the new Satellite location which is deployed on premise",
 			},
-			"capabilities": {
+			"capabilitiesManagedBySatellite": {
 				Type:        schema.TypeSet,
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
@@ -264,7 +264,7 @@ func ResourceIBMSatelliteLocationValidator() *validate.ResourceValidator {
 			MaxValueLength:             400,
 		},
 		validate.ValidateSchema{
-			Identifier:                 "capabilities",
+			Identifier:                 "capabilitiesManagedBySatellite",
 			ValidateFunctionIdentifier: validate.ValidateAllowedStringValue,
 			Type:                       validate.TypeString,
 			Optional:                   true,
@@ -310,7 +310,7 @@ func resourceIBMSatelliteLocationCreate(d *schema.ResourceData, meta interface{}
 		createSatLocOptions.PhysicalAddress = &addr
 	}
 
-	if v, ok := d.GetOk("capabilities"); ok {
+	if v, ok := d.GetOk("capabilitiesManagedBySatellite"); ok {
 		z := v.(*schema.Set)
 		createSatLocOptions.CapabilitiesManagedBySatellite = flex.FlattenSatelliteWorkerCapabilities(z)
 	}
@@ -399,7 +399,7 @@ func resourceIBMSatelliteLocationRead(d *schema.ResourceData, meta interface{}) 
 	}
 
 	if instance.CapabilitiesManagedBySatellite != nil {
-		d.Set("capabilities", instance.CapabilitiesManagedBySatellite)
+		d.Set("capabilitiesManagedBySatellite", instance.CapabilitiesManagedBySatellite)
 	}
 
 	if instance.CoreosEnabled != nil {
