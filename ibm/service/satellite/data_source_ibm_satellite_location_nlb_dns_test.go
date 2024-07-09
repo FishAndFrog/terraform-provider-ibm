@@ -16,13 +16,12 @@ import (
 func TestAccIBMSatelliteLocationNLBDNSListBasic(t *testing.T) {
 	name := fmt.Sprintf("tf-satellitelocation-%d", acctest.RandIntRange(10, 100))
 	managed_from := "wdc04"
-	physical_address := "test location address"
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { acc.TestAccPreCheck(t) },
 		Providers: acc.TestAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckIBMSatelliteLocationNLBDNSListConfig(name, managed_from, physical_address),
+				Config: testAccCheckIBMSatelliteLocationNLBDNSListConfig(name, managed_from),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.ibm_satellite_location_nlb_dns.dns_list", "id"),
 				),
@@ -31,8 +30,8 @@ func TestAccIBMSatelliteLocationNLBDNSListBasic(t *testing.T) {
 	})
 }
 
-func testAccCheckIBMSatelliteLocationNLBDNSListConfig(name, managed_from, physical_address string) string {
-	return testAccCheckSatelliteLocationDataSource(name, managed_from, physical_address) + `
+func testAccCheckIBMSatelliteLocationNLBDNSListConfig(name, managed_from string) string {
+	return testAccCheckSatelliteLocationDataSource(name, managed_from) + `
 	data ibm_satellite_location_nlb_dns dns_list {
 		location = ibm_satellite_location.location.id
 	}
