@@ -37,7 +37,7 @@ func DataSourceIBMSatelliteLocation() *schema.Resource {
 				Optional:    true,
 				Description: "An optional physical address of the new Satellite location which is deployed on premise",
 			},
-			"capabilities": {
+			"capabilitiesManagedBySatellite": {
 				Type:        schema.TypeSet,
 				Computed:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
@@ -206,7 +206,7 @@ func dataSourceIBMSatelliteLocationRead(d *schema.ResourceData, meta interface{}
 		d.Set("physical_address", *instance.PhysicalAddress)
 	}
 	if instance.CapabilitiesManagedBySatellite != nil {
-		d.Set("capabilities", instance.CapabilitiesManagedBySatellite)
+		d.Set("capabilitiesManagedBySatellite", instance.CapabilitiesManagedBySatellite)
 	}
 	if instance.CoreosEnabled != nil {
 		d.Set("coreos_enabled", *instance.CoreosEnabled)
